@@ -6,10 +6,9 @@ abstract class AuthState {}
 class AuthInitial extends AuthState {}
 
 class AuthLoggedIn extends AuthState {
-  final String authToken;
-  final User user;
+  final String accessToken;
 
-  AuthLoggedIn(this.authToken, this.user);
+  AuthLoggedIn(this.accessToken);
 }
 
 class AuthLoggedOut extends AuthState {}

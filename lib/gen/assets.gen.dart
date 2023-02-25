@@ -14,6 +14,9 @@ import 'package:flutter/services.dart';
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/internet.svg
+  SvgGenImage get internet => const SvgGenImage('assets/images/internet.svg');
+
   /// File path: assets/images/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/images/lock.svg');
 
@@ -25,7 +28,7 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/niftory_logo.png');
 
   /// List of all assets
-  List<dynamic> get values => [lock, locker, niftoryLogo];
+  List<dynamic> get values => [internet, lock, locker, niftoryLogo];
 }
 
 class Assets {
