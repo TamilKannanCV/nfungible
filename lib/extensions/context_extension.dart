@@ -25,4 +25,19 @@ extension ContextExtension on BuildContext {
       ),
     );
   }
+
+  void push<T>(Route<T> route) {
+    Navigator.of(this).push(route);
+  }
+
+  void pushNamed(String routeName, {Object? arguments}) {
+    Navigator.of(this).pushNamed(
+      routeName,
+      arguments: arguments,
+    );
+  }
+
+  void pop() {
+    Navigator.of(this).pop();
+  }
 }

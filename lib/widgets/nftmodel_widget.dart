@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:nfungible/extensions/context_extension.dart';
+import 'package:nfungible/screens/nft_model_screen.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:sizer/sizer.dart';
 
@@ -24,7 +26,9 @@ class _NFTModelWidgetState extends State<NFTModelWidget> {
   @override
   void initState() {
     super.initState();
-    PaletteGenerator.fromImageProvider(NetworkImage("${widget.item.content?.poster?.url}")).then((value) {
+    PaletteGenerator.fromImageProvider(
+            NetworkImage("${widget.item.content?.poster?.url}"))
+        .then((value) {
       setState(() {
         darkVibrantColor = value.darkMutedColor?.color ?? Colors.transparent;
         lightMutedColor = value.lightMutedColor?.color ?? Colors.black;
@@ -34,67 +38,85 @@ class _NFTModelWidgetState extends State<NFTModelWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15.0),
-      child: Hero(
-        tag: "${widget.item.id}",
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: CachedNetworkImage(
-                imageUrl: "${widget.item.content?.poster?.url}",
-                fit: BoxFit.cover,
+    return Hero(
+      tag: "${widget.item.id}",
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15.0),
+        child: GestureDetector(
+          onTap: () {
+            context.push(
+              MaterialPageRoute(
+                builder: (context) => NFTModelScreen(
+                  darkVibrantColor: darkVibrantColor,
+                  nftItem: widget.item,
+                ),
               ),
-            ),
-            Positioned.fill(
-              bottom: 0.0,
-              left: 0.0,
-              right: 0.0,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.transparent,
-                      darkVibrantColor,
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+            );
+          },
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CachedNetworkImage(
+                  imageUrl: "${widget.item.content?.poster?.url}",
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned.fill(
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        darkVibrantColor,
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 0.0,
-              left: 0.0,
-              right: 0.0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "${widget.item.title}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: lightMutedColor,
-                        fontSize: 16.0.sp,
-                      ),
-                      textAlign: TextAlign.center,
+              Positioned(
+                bottom: 0.0,
+                left: 0.0,
+                right: 0.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(15.0),
+                    color: Colors.transparent,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "${widget.item.title}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: lightMutedColor,
+                            fontSize: 16.0.sp,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          "${widget.item.description}",
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                            color: lightMutedColor.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      "${widget.item.description}",
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: lightMutedColor.withOpacity(0.7),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
 import 'package:nfungible/constants.dart';
 import 'package:nfungible/extensions/context_extension.dart';
 import 'package:nfungible/models/cubit/auth_cubit.dart';
+import 'package:nfungible/screens/create_nft_screen.dart';
 import 'package:nfungible/services/graphql_service.dart';
 import 'package:nfungible/widgets/nftmodel_widget.dart';
 import 'package:sizer/sizer.dart';
 import '../gen/assets.gen.dart';
-import '../models/cubit/api_cubit.dart';
 import '../models/nft_model/nft_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,76 +23,83 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
-        if (state is AuthError) {
-          context.pop();
-          context.showSnackbar(content: const Text("Unable to login"));
-        } else if (state is AuthLoggedOut) {
-          context.pop();
-          context.showSnackbar(content: const Text("Successfully logged out"));
-        } else if (state is AuthLoggedIn) {
-          context.pop();
-          context.showSnackbar(content: const Text("Successfully logged in"));
-          context.read<ApiCubit>().fetchDrops(state.accessToken);
-        } else if (state is AuthLoggingIn) {
-          context.showPreloader();
-        } else {
-          context.pop();
-        }
-      },
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar.large(
-              title: Text(kAppName),
+    return Scaffold(
+      floatingActionButton: const FloatingActionWidget(),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar.large(
+            title: Text(kAppName),
+          ),
+          const SliverPadding(
+            padding: EdgeInsets.all(10.0),
+            sliver: SliverToBoxAdapter(
+              child: Text("Available NFT Models"),
             ),
-            const SliverPadding(
-              padding: EdgeInsets.all(10.0),
-              sliver: SliverToBoxAdapter(
-                child: Text("Available NFT Models"),
+          ),
+          const FutureNFTModelsWidget(),
+        ],
+      ),
+    );
+  }
+}
+
+class FloatingActionWidget extends StatelessWidget {
+  const FloatingActionWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.large(
+      onPressed: () => context.pushNamed(CreateNFTScreen.routeName),
+      child: const Icon(Icons.add),
+    );
+  }
+}
+
+class FutureNFTModelsWidget extends StatelessWidget {
+  const FutureNFTModelsWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<NftModel>(
+      future: GraphqlService().getNFTModels(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final nftModel = snapshot.data;
+          if (nftModel == null) {
+            return const ErrorWidget();
+          }
+          final items = nftModel.items;
+          if (items == null || items.isEmpty == true) {
+            return const NoNFTWidget();
+          }
+          return SliverPadding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 10.0,
+              horizontal: 15.0,
+            ),
+            sliver: SliverGrid.builder(
+              itemCount: items.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
               ),
-            ),
-            FutureBuilder<NftModel>(
-              future: GraphqlService().getNFTModels(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final nftModel = snapshot.data;
-                  if (nftModel == null) {
-                    return const ErrorWidget();
-                  }
-                  final items = nftModel.items;
-                  if (items == null || items.isEmpty == true) {
-                    return const NoNFTWidget();
-                  }
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10.0,
-                      horizontal: 15.0,
-                    ),
-                    sliver: SliverGrid.builder(
-                      itemCount: items.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 1,
-                        mainAxisSpacing: 10.0,
-                        crossAxisSpacing: 10.0,
-                      ),
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        return NFTModelWidget(item: item);
-                      },
-                    ),
-                  );
-                }
-                return const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(child: CircularProgressIndicator()),
-                );
+              itemBuilder: (context, index) {
+                final item = items[index];
+                return NFTModelWidget(item: item).animate().fade();
               },
             ),
-          ],
-        ),
-      ),
+          );
+        }
+        return const SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 }
