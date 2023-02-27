@@ -19,21 +19,19 @@ class NFTModelWidget extends StatefulWidget {
   State<NFTModelWidget> createState() => _NFTModelWidgetState();
 }
 
-class _NFTModelWidgetState extends State<NFTModelWidget> {
+class _NFTModelWidgetState extends State<NFTModelWidget> with AutomaticKeepAliveClientMixin {
   Color darkVibrantColor = Colors.transparent;
   Color lightMutedColor = Colors.black;
 
   @override
   void initState() {
-    super.initState();
-    PaletteGenerator.fromImageProvider(
-            NetworkImage("${widget.item.content?.poster?.url}"))
-        .then((value) {
+    PaletteGenerator.fromImageProvider(CachedNetworkImageProvider("${widget.item.content?.poster?.url}")).then((value) {
       setState(() {
         darkVibrantColor = value.darkMutedColor?.color ?? Colors.transparent;
         lightMutedColor = value.lightMutedColor?.color ?? Colors.black;
       });
     });
+    super.initState();
   }
 
   @override
@@ -59,6 +57,16 @@ class _NFTModelWidgetState extends State<NFTModelWidget> {
                 child: CachedNetworkImage(
                   imageUrl: "${widget.item.content?.poster?.url}",
                   fit: BoxFit.cover,
+                  progressIndicatorBuilder: (context, url, progress) {
+                    return Center(
+                      child: CircularProgressIndicator.adaptive(
+                        value: progress.progress,
+                      ),
+                    );
+                  },
+                  errorWidget: (context, url, error) => const Center(
+                    child: Icon(Icons.image_not_supported_outlined),
+                  ),
                 ),
               ),
               Positioned.fill(
@@ -121,4 +129,7 @@ class _NFTModelWidgetState extends State<NFTModelWidget> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

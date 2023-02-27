@@ -18,10 +18,7 @@ dependencies:
   flutter_gen_runner: ^5.2.0
   flutter_svg: ^2.0.1
   sizer: ^2.0.15
-  firebase_core: ^2.7.0
-  firebase_auth: ^4.2.9
   font_awesome_flutter: ^10.4.0
-  google_sign_in: ^6.0.0
   flutter_bloc: ^8.1.2
   flutter_dotenv: ^5.0.2
   graphql_flutter: ^5.1.1
@@ -30,6 +27,9 @@ dependencies:
   flutter_animate: ^4.1.0
   carousel_slider: ^4.2.1
   dropdown_button2: ^1.9.4
+  customizable_counter: ^1.0.4
+  permission_handler: ^10.2.0
+  file_picker: ^5.2.5
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +37,7 @@ dev_dependencies:
 
   flutter_lints: ^2.0.0
   build_runner: ^2.3.3
+  change_app_package_name: ^1.1.0
 
 flutter_gen:
   integrations:

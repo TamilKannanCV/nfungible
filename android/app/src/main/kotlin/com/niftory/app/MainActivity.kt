@@ -1,4 +1,4 @@
-package com.example.nfungible
+package com.niftory.app
 
 import io.flutter.embedding.android.FlutterActivity
 

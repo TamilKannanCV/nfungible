@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nfungible/constants.dart';
 import 'package:nfungible/extensions/context_extension.dart';
-import 'package:nfungible/models/cubit/auth_cubit.dart';
+import 'package:nfungible/models/cubit/graphql_cubit.dart';
 import 'package:nfungible/screens/create_nft_screen.dart';
 import 'package:nfungible/services/graphql_service.dart';
 import 'package:nfungible/widgets/nftmodel_widget.dart';
@@ -21,6 +20,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<GraphqlCubit>().getNFTModels();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,15 +62,20 @@ class FloatingActionWidget extends StatelessWidget {
   }
 }
 
-class FutureNFTModelsWidget extends StatelessWidget {
+class FutureNFTModelsWidget extends StatefulWidget {
   const FutureNFTModelsWidget({
     super.key,
   });
 
   @override
+  State<FutureNFTModelsWidget> createState() => _FutureNFTModelsWidgetState();
+}
+
+class _FutureNFTModelsWidgetState extends State<FutureNFTModelsWidget> {
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<NftModel>(
-      future: GraphqlService().getNFTModels(),
+    return StreamBuilder<NftModel>(
+      stream: GraphqlService.nftModelStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final nftModel = snapshot.data;
@@ -90,7 +100,7 @@ class FutureNFTModelsWidget extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 final item = items[index];
-                return NFTModelWidget(item: item).animate().fade();
+                return NFTModelWidget(item: item);
               },
             ),
           );
@@ -151,66 +161,6 @@ class ErrorWidget extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class LoginWidget extends StatelessWidget {
-  const LoginWidget({super.key});
-  void onLoginPressed(BuildContext context) async {
-    // context.read<AuthCubit>().login();
-    GraphqlService().getNFTModels();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Assets.images.lock.svg(
-            height: 13.0.h,
-            width: 13.0.w,
-          ),
-          SizedBox(height: 2.5.h),
-          Text(
-            "Sign into $kAppName",
-            style: TextStyle(
-              fontSize: 17.0.sp,
-            ),
-          ),
-          SizedBox(height: 2.0.h),
-          BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) {
-              if (state is AuthLoggingIn) {
-                return const SizedBox(
-                  width: 20.0,
-                  height: 20.0,
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return FilledButton.icon(
-                onPressed: () => onLoginPressed(context),
-                icon: const Icon(
-                  FontAwesomeIcons.google,
-                  size: 17.0,
-                ),
-                label: const Text("Continue with Google"),
-              );
-            },
-          ),
-          SizedBox(height: 1.0.h),
-          Container(
-            alignment: Alignment.center,
-            width: 90.w,
-            child: Text(
-              "To continue,  needs access to your email and picture.",
-              style: TextStyle(fontSize: 12.0.sp),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
       ),
     );
   }

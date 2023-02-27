@@ -22,6 +22,7 @@ extension ContextExtension on BuildContext {
         content: content,
         action: action,
         behavior: SnackBarBehavior.floating,
+        dismissDirection: DismissDirection.startToEnd,
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nfungible/extensions/context_extension.dart';
+import 'package:nfungible/models/cubit/graphql_cubit.dart';
 import 'package:nfungible/services/graphql_service.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -22,61 +24,67 @@ class _CreateSetScreenState extends State<CreateSetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar.medium(
-            title: const Text("Create a Set"),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(10.0),
-            sliver: MultiSliver(
-              children: [
-                TextFormField(
-                  controller: _controller,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Set Title",
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "*required";
-                    }
-                    return null;
-                  },
-                ),
-              ],
+    return BlocListener<GraphqlCubit, GraphqlState>(
+      listener: (context, state) {
+        if (state is GraphqlLoading) {
+          context.showPreloader(canPop: false);
+        }
+        if (state is GraphqlLoaded) {
+          context.pop();
+          context.pop();
+          context.showSnackbar(content: const Text("Congrats💐, Your NFT set created"));
+        }
+        if (state is GraphqlError) {
+          context.pop();
+          context.showSnackbar(content: const Text("Unable to create NFT set"));
+        }
+      },
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar.medium(
+              title: const Text("Create a Set"),
             ),
-          ),
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  width: double.maxFinite,
-                  child: FilledButton(
-                    onPressed: () {
-                      GraphqlService()
-                          .createSet(_controller.text)
-                          .then((value) {
-                        context.showSnackbar(
-                            content: const Text("NFT Set created"));
-                        context.pop();
-                      }).catchError((err) {
-                        context.showSnackbar(
-                            content: const Text("Unable to create NFT Set"));
-                        context.pop();
-                      });
+            SliverPadding(
+              padding: const EdgeInsets.all(10.0),
+              sliver: MultiSliver(
+                children: [
+                  TextFormField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Set Title",
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "*required";
+                      }
+                      return null;
                     },
-                    child: const Text("Create Set"),
+                  ),
+                ],
+              ),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: double.maxFinite,
+                    child: FilledButton(
+                      onPressed: () {
+                        context.read<GraphqlCubit>().createSet(_controller.text);
+                      },
+                      child: const Text("Create Set"),
+                    ),
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

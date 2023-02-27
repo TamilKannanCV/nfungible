@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -15,7 +16,14 @@ class GraphqlService {
   static final config = GraphqlConfig();
   final client = config.clientToQuery();
 
-  Future<NftModel> getNFTModels() async {
+  static final StreamController<NftModel> _controller = StreamController.broadcast();
+  static final Stream<NftModel> nftModelStream = _controller.stream;
+
+  static final StreamController<NftSet> _setsController = StreamController.broadcast();
+  static final Stream<NftSet> setsStream = _setsController.stream;
+
+  ///Gets all available NFT Models
+  Future<void> getNFTModels() async {
     try {
       final result = await client.query(
         QueryOptions(
@@ -70,13 +78,14 @@ class GraphqlService {
         throw Exception("");
       }
       final nftModel = NftModel.fromMap(res['nftModels']);
-      return nftModel;
+      _controller.add(nftModel);
     } catch (e) {
       throw Exception(e);
     }
   }
 
-  Future<NftSet> getNFTSets() async {
+  ///Gets all available NFT sets
+  Future<void> getNFTSets() async {
     try {
       final result = await client.query(
         QueryOptions(
@@ -111,12 +120,13 @@ class GraphqlService {
         throw Exception("");
       }
       final nftSet = NftSet.fromMap(res);
-      return nftSet;
+      _setsController.add(nftSet);
     } catch (e) {
       throw Exception(e);
     }
   }
 
+  ///Create an NFT set
   Future<bool> createSet(String title) async {
     try {
       final result = await client.query(
@@ -149,22 +159,81 @@ class GraphqlService {
     }
   }
 
-  Future<bool> uploadImageToPreSignedUrl(File file, String presignedUrl) async {
-    final request = http.put(
-      Uri.parse(presignedUrl),
-      headers: {'Content-Type': 'application/octet-stream'},
-      body: await file.readAsBytes(),
-    );
-    final response = await request;
-    if (response.statusCode == 200) {
-      log('File uploaded successfully!');
+  ///Creates an NFT Model
+  Future<bool> createNFTModel({
+    required String title,
+    required String description,
+    required int quantity,
+    required File posterImage,
+    required File contentImage,
+    required String setId,
+  }) async {
+    final posterUrl = await createFileUploadUrl();
+    final contentUrl = await createFileUploadUrl();
+
+    await uploadImageToPreSignedUrl(posterImage, "${posterUrl.url}");
+    await uploadImageToPreSignedUrl(contentImage, "${contentUrl.url}");
+
+    try {
+      final result = await client.query(
+        QueryOptions(
+          fetchPolicy: FetchPolicy.noCache,
+          document: gql('''
+            mutation CreateModel(\$setId: ID!, \$data: NFTModelCreateInput!) {
+                createNFTModel(setId: \$setId, data: \$data) {
+                    id
+                    quantity
+                    title
+                }
+            }
+'''),
+          variables: {
+            "setId": setId,
+            "data": {
+              "title": title,
+              "description": description,
+              "quantity": quantity,
+              "content": {
+                "fileId": contentUrl.id,
+                "posterId": posterUrl.id,
+              },
+            }
+          },
+        ),
+      );
+      if (result.hasException) {
+        throw Exception(result.exception);
+      }
+      final res = result.data;
+
+      if (res == null) {
+        throw Exception("");
+      }
+      getNFTModels();
       return true;
-    } else {
-      log('Failed to upload file. Response code: ${response.statusCode}');
-      return false;
+    } catch (e) {
+      throw Exception(e);
     }
   }
 
+  ///Uploads image to a pre-signed url
+  Future<void> uploadImageToPreSignedUrl(File file, String presignedUrl) async {
+    final response = await http.put(
+      Uri.parse(presignedUrl),
+      headers: {"Content-Type": "image/jpeg"},
+      body: await file.readAsBytes(),
+    );
+
+    if (response.statusCode == 200) {
+      log('File uploaded successfully');
+    } else {
+      log(response.statusCode.toString());
+      log('Failed to upload file');
+      throw Exception();
+    }
+  }
+
+  ///Create a file upload url
   Future<UploadFileUrl> createFileUploadUrl() async {
     try {
       final result = await client.query(
