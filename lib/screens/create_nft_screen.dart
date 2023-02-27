@@ -130,10 +130,68 @@ class _CreateNFTScreenState extends State<CreateNFTScreen> {
                   },
                 ),
                 SizedBox(height: 1.5.h),
-                
+                Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Poster",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Container(
+                        height: 150.0,
+                        width: 150.0,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 10.0),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Content",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Container(
+                        height: 100.0,
+                        width: 100.0,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                      ),
+                    ],
+                  ),
+                ])
               ],
             ),
           ),
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: const EdgeInsets.all(10.0),
+                width: double.maxFinite,
+                child: FilledButton(
+                  onPressed: () {},
+                  child: const Text("Create NFT Model"),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
