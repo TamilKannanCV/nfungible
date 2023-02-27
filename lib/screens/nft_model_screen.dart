@@ -7,8 +7,7 @@ import 'package:sliver_tools/sliver_tools.dart';
 
 class NFTModelScreen extends StatefulWidget {
   static String get routeName => "/nftModel";
-  const NFTModelScreen(
-      {super.key, required this.darkVibrantColor, required this.nftItem});
+  const NFTModelScreen({super.key, required this.darkVibrantColor, required this.nftItem});
   final Color darkVibrantColor;
   final Item nftItem;
 
@@ -71,8 +70,7 @@ class _NFTModelScreenState extends State<NFTModelScreen> {
                             borderRadius: BorderRadius.circular(15.0),
                           ),
                           child: CachedNetworkImage(
-                            imageUrl:
-                                "${widget.nftItem.content?.files?.first.url}",
+                            imageUrl: "${widget.nftItem.content?.files?.first.url}",
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -104,13 +102,28 @@ class _NFTModelScreenState extends State<NFTModelScreen> {
                                 subtitle: Text("${widget.nftItem.id}"),
                               ),
                               ListTile(
+                                title: const Text("Title"),
+                                subtitle: Text("${widget.nftItem.title}"),
+                              ),
+                              ListTile(
+                                title: const Text("Description"),
+                                subtitle: Text("${widget.nftItem.description}"),
+                              ),
+                              ListTile(
                                 title: const Text("Quantity"),
                                 subtitle: Text("${widget.nftItem.quantity}"),
                               ),
                               ListTile(
                                 title: const Text("Quantity Minted"),
-                                subtitle:
-                                    Text("${widget.nftItem.quantityMinted}"),
+                                subtitle: Text("${widget.nftItem.quantityMinted}"),
+                              ),
+                              ListTile(
+                                title: const Text("Rarity"),
+                                subtitle: Text("${widget.nftItem.rarity}"),
+                              ),
+                              ListTile(
+                                title: const Text("Status"),
+                                subtitle: Text("${widget.nftItem.status}"),
                               ),
                             ],
                           ),

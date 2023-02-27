@@ -87,27 +87,13 @@ class _CreateNFTScreenState extends State<CreateNFTScreen> {
                               maps[e.id] = e.title;
                             });
                             maps["0x"] = "Create a new set...";
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: SetsDropdownWidget(
-                                    maps: maps,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedSet = {value.toString(): maps[value]};
-                                      });
-                                    },
-                                  ),
-                                ),
-                                IconButton(
-                                  tooltip: "Refresh",
-                                  onPressed: () {
-                                    context.showSnackbar(content: const Text("Fetching NFT Sets..."));
-                                    setState(() {});
-                                  },
-                                  icon: const Icon(Icons.replay_outlined),
-                                )
-                              ],
+                            return SetsDropdownWidget(
+                              maps: maps,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedSet = {value.toString(): maps[value]};
+                                });
+                              },
                             );
                           }
                         }
@@ -247,7 +233,7 @@ class QuantityWidget extends StatelessWidget {
               child: Text(
             "Quantity",
             style: TextStyle(
-              fontSize: 16.0.sp,
+              fontSize: 14.0.sp,
             ),
           )),
           CustomizableCounter(

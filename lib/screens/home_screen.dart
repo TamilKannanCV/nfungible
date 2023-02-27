@@ -91,17 +91,22 @@ class _FutureNFTModelsWidgetState extends State<FutureNFTModelsWidget> {
               vertical: 10.0,
               horizontal: 15.0,
             ),
-            sliver: SliverGrid.builder(
-              itemCount: items.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
+            sliver: SliverToBoxAdapter(
+              child: GridView.builder(
+                cacheExtent: 200,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: items.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10.0,
+                  crossAxisSpacing: 10.0,
+                ),
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return NFTModelWidget(item: item);
+                },
               ),
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return NFTModelWidget(item: item);
-              },
             ),
           );
         }
