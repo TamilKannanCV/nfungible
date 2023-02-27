@@ -34,6 +34,21 @@ class _HomeScreenState extends State<HomeScreen> {
         slivers: [
           SliverAppBar.large(
             title: Text(kAppName),
+            actions: [
+              IconButton(
+                onPressed: () => showAboutDialog(
+                  context: context,
+                  applicationIcon: Assets.images.niftoryLogo.image(
+                    height: 80.0,
+                    width: 80.0,
+                  ),
+                  applicationName: kAppName,
+                  applicationVersion: "1.0.0",
+                  applicationLegalese: "Tamil Kannan C V",
+                ),
+                icon: const Icon(Icons.info_outline),
+              ),
+            ],
           ),
           const SliverPadding(
             padding: EdgeInsets.all(10.0),

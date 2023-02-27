@@ -68,14 +68,13 @@ class _CreateNFTScreenState extends State<CreateNFTScreen> {
           key: _formKey,
           child: CustomScrollView(
             slivers: [
-              SliverAppBar.medium(
-                title: const Text("Create NFT Model"),
-              ),
+              SliverAppBar.medium(title: const Text("Create NFT Model")),
               SliverPadding(
                 padding: const EdgeInsets.all(10.0),
                 sliver: MultiSliver(
                   children: [
-                    SizedBox(height: 1.0.h),
+                    const Text("A blueprint for an NFT, containing everything needed to mint one -- file content, blockchain metadata, etc."),
+                    SizedBox(height: 3.0.h),
                     StreamBuilder<NftSet>(
                       stream: GraphqlService.setsStream,
                       builder: (context, snapshot) {
