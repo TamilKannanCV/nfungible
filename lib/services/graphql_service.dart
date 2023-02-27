@@ -1,7 +1,11 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:nfungible/models/upload_file_url.dart';
+import 'package:nfungible/utils/string_utils.dart';
 import '../configs/graphql_config.dart';
 import '../models/nft_model/nft_model.dart';
 import '../models/nft_set/nft_set.dart';
@@ -140,6 +144,60 @@ class GraphqlService {
         throw Exception("");
       }
       return true;
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<bool> uploadImageToPreSignedUrl(File file, String presignedUrl) async {
+    final request = http.put(
+      Uri.parse(presignedUrl),
+      headers: {'Content-Type': 'application/octet-stream'},
+      body: await file.readAsBytes(),
+    );
+    final response = await request;
+    if (response.statusCode == 200) {
+      log('File uploaded successfully!');
+      return true;
+    } else {
+      log('Failed to upload file. Response code: ${response.statusCode}');
+      return false;
+    }
+  }
+
+  Future<UploadFileUrl> createFileUploadUrl() async {
+    try {
+      final result = await client.query(
+        QueryOptions(
+          fetchPolicy: FetchPolicy.noCache,
+          document: gql('''
+           mutation CreateFileUploadUrl(\$name: String!, \$description: String, \$options: CreateFileOptionsInput!) {
+              createFileUploadUrl(name: \$name, description: \$description, options: \$options) {
+                  id
+                  name
+                  url
+                  state
+              }
+          }
+'''),
+          variables: {
+            "name": StringUtils.getRandomString(10),
+            "description": "NFT Model File",
+            "options": const {
+              "uploadToIPFS": true,
+              "contentType": "image/jpeg",
+            },
+          },
+        ),
+      );
+      if (result.hasException) {
+        throw Exception(result.exception);
+      }
+      final res = result.data;
+      if (res == null) {
+        throw Exception("");
+      }
+      return UploadFileUrl.fromMap(res['createFileUploadUrl']);
     } catch (e) {
       throw Exception(e);
     }

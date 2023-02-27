@@ -58,11 +58,15 @@ class _CreateSetScreenState extends State<CreateSetScreen> {
                   width: double.maxFinite,
                   child: FilledButton(
                     onPressed: () {
-                      GraphqlService().createSet(_controller.text).then((value) {
-                        context.showSnackbar(content: const Text("NFT Set created"));
+                      GraphqlService()
+                          .createSet(_controller.text)
+                          .then((value) {
+                        context.showSnackbar(
+                            content: const Text("NFT Set created"));
                         context.pop();
                       }).catchError((err) {
-                        context.showSnackbar(content: const Text("Unable to create NFT Set"));
+                        context.showSnackbar(
+                            content: const Text("Unable to create NFT Set"));
                         context.pop();
                       });
                     },

@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:nfungible/extensions/context_extension.dart';
 import 'package:nfungible/models/nft_set/nft_set.dart';
 import 'package:nfungible/screens/create_set_screen.dart';
-import 'package:nfungible/services/api_service.dart';
 import 'package:nfungible/services/graphql_service.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -21,6 +20,16 @@ class CreateNFTScreen extends StatefulWidget {
 
 class _CreateNFTScreenState extends State<CreateNFTScreen> {
   Map<String, String> selectedSet = {};
+
+  late TextEditingController _nftTitleCtlr;
+  late TextEditingController _nftDescCtlr;
+
+  @override
+  void initState() {
+    super.initState();
+    _nftTitleCtlr = TextEditingController();
+    _nftDescCtlr = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +70,7 @@ class _CreateNFTScreenState extends State<CreateNFTScreen> {
                             IconButton(
                               tooltip: "Refresh",
                               onPressed: () {
+                                context.showSnackbar(content: const Text("Fetching NFT Sets..."));
                                 setState(() {});
                               },
                               icon: const Icon(Icons.replay_outlined),
@@ -88,6 +98,39 @@ class _CreateNFTScreenState extends State<CreateNFTScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 2.0.h),
+                TextFormField(
+                  controller: _nftTitleCtlr,
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Set Title",
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "*required";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 1.5.h),
+                TextFormField(
+                  controller: _nftDescCtlr,
+                  maxLines: 3,
+                  maxLength: 50,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Set Description",
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "*required";
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 1.5.h),
+                
               ],
             ),
           ),

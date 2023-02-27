@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ThemeHelper {
-  static get themeMode => ThemeMode.system;
+  static get themeMode => ThemeMode.light;
 
   static get lightTheme => ThemeData(
         useMaterial3: true,
