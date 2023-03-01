@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nfungible/dialogs/image_source_picker.dart';
+import 'package:nfungible/enums/image_source.dart';
 
 extension ContextExtension on BuildContext {
   void showPreloader({bool canPop = true}) {
@@ -27,18 +29,42 @@ extension ContextExtension on BuildContext {
     );
   }
 
-  void push<T>(Route<T> route) {
-    Navigator.of(this).push(route);
+  void showProgressDialog() {
+    showDialog(
+      context: this,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: const AlertDialog(
+          title: Text("Preparing image"),
+          content: LinearProgressIndicator(),
+        ),
+      ),
+    );
   }
 
-  void pushNamed(String routeName, {Object? arguments}) {
-    Navigator.of(this).pushNamed(
+  void showImageSourceOptionDialog(
+    void Function(ImageSource source) onSourcePicked,
+  ) {
+    showDialog(
+      context: this,
+      builder: (context) => ImageSourcePicker(
+        onImageSourcePicked: onSourcePicked,
+      ),
+    );
+  }
+
+  Future<T?> push<T>(Route<T> route) {
+    return Navigator.of(this).push(route);
+  }
+
+  Future<T?> pushNamed<T extends Object?>(String routeName, {Object? arguments}) {
+    return Navigator.of(this).pushNamed(
       routeName,
       arguments: arguments,
     );
   }
 
-  void pop() {
-    Navigator.of(this).pop();
+  void pop<T extends Object?>([T? result]) {
+    Navigator.of(this).pop(result);
   }
 }

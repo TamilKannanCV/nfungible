@@ -7,13 +7,18 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:nfungible/enums/image_source.dart';
 import 'package:nfungible/extensions/context_extension.dart';
 import 'package:nfungible/models/nft_set/nft_set.dart';
+import 'package:nfungible/screens/ai_image_search_screen.dart';
 import 'package:nfungible/screens/create_set_screen.dart';
-import 'package:nfungible/services/graphql_service.dart';
+import 'package:nfungible/services/graphql_services.dart';
+import 'package:nfungible/utils/string_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../models/cubit/graphql_cubit.dart';
 
@@ -229,12 +234,13 @@ class QuantityWidget extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-              child: Text(
-            "Quantity",
-            style: TextStyle(
-              fontSize: 14.0.sp,
+            child: Text(
+              "Quantity",
+              style: TextStyle(
+                fontSize: 14.0.sp,
+              ),
             ),
-          )),
+          ),
           CustomizableCounter(
             borderColor: Colors.transparent,
             showButtonText: false,
@@ -280,20 +286,12 @@ class _ImagesWidgetState extends State<ImagesWidget> {
             ),
             const SizedBox(height: 10.0),
             GestureDetector(
-              onTap: () async {
-                final file = await selectImageFile();
-                if (file != null) {
-                  widget.onPosterSelected.call(file);
-                  setState(() {
-                    posterImage = file;
-                  });
-                }
-              },
+              onTap: () => selectPoster(),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: Container(
-                  height: 150.0,
-                  width: 150.0,
+                  height: 100.0,
+                  width: 100.0,
                   decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -324,20 +322,12 @@ class _ImagesWidgetState extends State<ImagesWidget> {
             ),
             const SizedBox(height: 10.0),
             GestureDetector(
-              onTap: () async {
-                final file = await selectImageFile();
-                if (file != null) {
-                  widget.onContentSelected.call(file);
-                  setState(() {
-                    contentImage = file;
-                  });
-                }
-              },
+              onTap: () => selectContent(),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
                 child: Container(
-                  height: 100.0,
-                  width: 100.0,
+                  height: 150.0,
+                  width: 150.0,
                   decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(15.0),
@@ -359,6 +349,17 @@ class _ImagesWidgetState extends State<ImagesWidget> {
     );
   }
 
+  Future<File?> downloadImageFile(String url) async {
+    try {
+      var response = await http.get(Uri.parse(url));
+      File imageFile = File("${(await getTemporaryDirectory()).path}${Platform.pathSeparator}${StringUtils.getRandomString(6)}.jpg");
+      await imageFile.writeAsBytes(response.bodyBytes);
+      return imageFile;
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<File?> selectImageFile() async {
     if (await Permission.storage.request() != PermissionStatus.granted) {
       return null;
@@ -373,6 +374,80 @@ class _ImagesWidgetState extends State<ImagesWidget> {
       return File(file.path!);
     }
     return null;
+  }
+
+  void selectPoster() {
+    context.showImageSourceOptionDialog(
+      (source) async {
+        context.pop();
+
+        if (source == ImageSource.pick) {
+          final file = await selectImageFile();
+          if (file != null) {
+            widget.onContentSelected.call(file);
+            setState(() {
+              posterImage = file;
+            });
+          }
+        } else if (source == ImageSource.create) {
+          final url = await context.push<String>(
+            MaterialPageRoute(
+              builder: (context) => AIImagesSearchScreen(),
+            ),
+          );
+          if (url == null) {
+            return;
+          }
+          if (mounted) {
+            context.showProgressDialog();
+          }
+          final file = await downloadImageFile(url);
+          if (mounted) {
+            context.pop();
+          }
+          setState(() {
+            posterImage = file;
+          });
+        }
+      },
+    );
+  }
+
+  void selectContent() {
+    context.showImageSourceOptionDialog(
+      (source) async {
+        context.pop();
+
+        if (source == ImageSource.pick) {
+          final file = await selectImageFile();
+          if (file != null) {
+            widget.onContentSelected.call(file);
+            setState(() {
+              contentImage = file;
+            });
+          }
+        } else if (source == ImageSource.create) {
+          final url = await context.push<String>(
+            MaterialPageRoute(
+              builder: (context) => AIImagesSearchScreen(),
+            ),
+          );
+          if (url == null) {
+            return;
+          }
+          if (mounted) {
+            context.showProgressDialog();
+          }
+          final file = await downloadImageFile(url);
+          if (mounted) {
+            context.pop();
+          }
+          setState(() {
+            contentImage = file;
+          });
+        }
+      },
+    );
   }
 }
 

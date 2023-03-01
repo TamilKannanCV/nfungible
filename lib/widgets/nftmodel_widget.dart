@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nfungible/extensions/context_extension.dart';
 import 'package:nfungible/screens/nft_model_screen.dart';
@@ -25,7 +24,7 @@ class _NFTModelWidgetState extends State<NFTModelWidget> with AutomaticKeepAlive
 
   @override
   void initState() {
-    PaletteGenerator.fromImageProvider(CachedNetworkImageProvider("${widget.item.content?.poster?.url}")).then((value) {
+    PaletteGenerator.fromImageProvider(NetworkImage("${widget.item.content?.poster?.url}")).then((value) {
       setState(() {
         darkVibrantColor = value.darkMutedColor?.color ?? Colors.transparent;
         lightMutedColor = value.lightMutedColor?.color ?? Colors.black;
@@ -36,6 +35,7 @@ class _NFTModelWidgetState extends State<NFTModelWidget> with AutomaticKeepAlive
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Hero(
       tag: "${widget.item.id}",
       child: ClipRRect(
@@ -54,19 +54,9 @@ class _NFTModelWidgetState extends State<NFTModelWidget> with AutomaticKeepAlive
           child: Stack(
             children: [
               Positioned.fill(
-                child: CachedNetworkImage(
-                  imageUrl: "${widget.item.content?.poster?.url}",
+                child: Image.network(
+                  "${widget.item.content?.poster?.url}",
                   fit: BoxFit.cover,
-                  progressIndicatorBuilder: (context, url, progress) {
-                    return Center(
-                      child: CircularProgressIndicator.adaptive(
-                        value: progress.progress,
-                      ),
-                    );
-                  },
-                  errorWidget: (context, url, error) => const Center(
-                    child: Icon(Icons.image_not_supported_outlined),
-                  ),
                 ),
               ),
               Positioned.fill(

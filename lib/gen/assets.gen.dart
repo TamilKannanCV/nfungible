@@ -27,8 +27,13 @@ class $AssetsImagesGen {
   AssetGenImage get niftoryLogo =>
       const AssetGenImage('assets/images/niftory_logo.png');
 
+  /// File path: assets/images/panda_with_mobile.png
+  AssetGenImage get pandaWithMobile =>
+      const AssetGenImage('assets/images/panda_with_mobile.png');
+
   /// List of all assets
-  List<dynamic> get values => [internet, lock, locker, niftoryLogo];
+  List<dynamic> get values =>
+      [internet, lock, locker, niftoryLogo, pandaWithMobile];
 }
 
 class Assets {

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:nfungible/models/nft_model/item.dart';
@@ -42,8 +41,10 @@ class _NFTModelScreenState extends State<NFTModelScreen> {
                     tag: "${widget.nftItem.id}",
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15.0),
-                      child: CachedNetworkImage(
-                        imageUrl: "${widget.nftItem.content?.poster?.url}",
+                      child: Image.network(
+                        "${widget.nftItem.content?.poster?.url}",
+                        height: 200.0,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -69,8 +70,8 @@ class _NFTModelScreenState extends State<NFTModelScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15.0),
                           ),
-                          child: CachedNetworkImage(
-                            imageUrl: "${widget.nftItem.content?.files?.first.url}",
+                          child: Image.network(
+                            "${widget.nftItem.content?.files?.first.url}",
                             fit: BoxFit.cover,
                           ),
                         ),

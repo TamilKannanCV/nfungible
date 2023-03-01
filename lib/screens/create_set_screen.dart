@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nfungible/extensions/context_extension.dart';
 import 'package:nfungible/models/cubit/graphql_cubit.dart';
-import 'package:nfungible/services/graphql_service.dart';
+import 'package:nfungible/services/graphql_services.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 

@@ -5,7 +5,7 @@ import 'package:nfungible/constants.dart';
 import 'package:nfungible/extensions/context_extension.dart';
 import 'package:nfungible/models/cubit/graphql_cubit.dart';
 import 'package:nfungible/screens/create_nft_screen.dart';
-import 'package:nfungible/services/graphql_service.dart';
+import 'package:nfungible/services/graphql_services.dart';
 import 'package:nfungible/widgets/nftmodel_widget.dart';
 import 'package:sizer/sizer.dart';
 import '../gen/assets.gen.dart';

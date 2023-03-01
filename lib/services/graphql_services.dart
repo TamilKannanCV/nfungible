@@ -209,6 +209,9 @@ class GraphqlService {
       if (res == null) {
         throw Exception("");
       }
+      final modelId = res['createNFTModel']['id'];
+      log(modelId);
+      await mintNFTModel(modelId, quantity);
       getNFTModels();
       return true;
     } catch (e) {
@@ -267,6 +270,51 @@ class GraphqlService {
         throw Exception("");
       }
       return UploadFileUrl.fromMap(res['createFileUploadUrl']);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  ///Mints an NFT Model
+  Future<void> mintNFTModel(String modelId, int quantityToMint) async {
+    try {
+      final result = await client.query(
+        QueryOptions(
+          fetchPolicy: FetchPolicy.noCache,
+          document: gql('''
+          mutation mintNFTModel(\$id: ID!, \$quantity: PositiveInt) {
+            mintNFTModel(id: \$id, quantity: \$quantity) {
+                id
+                quantity
+                quantityMinted
+                nfts {
+                    blockchainState
+                    id
+                    blockchainId
+                    serialNumber
+                    transactions {
+                        blockchain
+                        hash
+                        name
+                    }
+                }
+            }
+          }
+'''),
+          variables: {
+            "id": modelId,
+            "quantity": quantityToMint,
+          },
+        ),
+      );
+      if (result.hasException) {
+        throw Exception(result.exception);
+      }
+      final res = result.data;
+      if (res == null) {
+        throw Exception("");
+      }
+      log(res.toString());
     } catch (e) {
       throw Exception(e);
     }

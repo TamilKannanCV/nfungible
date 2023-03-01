@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nfungible/models/cubit/graphql_cubit.dart';
+import 'package:nfungible/models/cubit/openai_cubit.dart';
 import 'package:nfungible/screens/create_nft_screen.dart';
 import 'package:nfungible/screens/create_set_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -15,7 +16,14 @@ void main() async {
 
   runApp(
     Sizer(
-      builder: (context, _, __) => const App(),
+      builder: (context, _, __) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => OpenAICubit(),
+          ),
+        ],
+        child: const App(),
+      ),
     ),
   );
 }

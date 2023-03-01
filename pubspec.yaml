@@ -22,7 +22,6 @@ dependencies:
   flutter_bloc: ^8.1.2
   flutter_dotenv: ^5.0.2
   graphql_flutter: ^5.1.1
-  cached_network_image: ^3.2.3
   palette_generator: ^0.3.3+2
   flutter_animate: ^4.1.0
   carousel_slider: ^4.2.1
@@ -30,6 +29,8 @@ dependencies:
   customizable_counter: ^1.0.4
   permission_handler: ^10.2.0
   file_picker: ^5.2.5
+  cached_network_image: ^3.2.3
+  path_provider: ^2.0.13
 
 dev_dependencies:
   flutter_test:

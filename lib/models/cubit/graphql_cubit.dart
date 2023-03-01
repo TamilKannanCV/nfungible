@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nfungible/models/nft_set/nft_set.dart';
-import 'package:nfungible/services/graphql_service.dart';
+import 'package:nfungible/services/graphql_services.dart';
 
 part 'graphql_state.dart';
 
