@@ -384,7 +384,7 @@ class _ImagesWidgetState extends State<ImagesWidget> {
         if (source == ImageSource.pick) {
           final file = await selectImageFile();
           if (file != null) {
-            widget.onContentSelected.call(file);
+            widget.onPosterSelected.call(file);
             setState(() {
               posterImage = file;
             });
@@ -405,6 +405,8 @@ class _ImagesWidgetState extends State<ImagesWidget> {
           if (mounted) {
             context.pop();
           }
+          if (file == null) return;
+          widget.onPosterSelected.call(file);
           setState(() {
             posterImage = file;
           });
@@ -442,6 +444,8 @@ class _ImagesWidgetState extends State<ImagesWidget> {
           if (mounted) {
             context.pop();
           }
+          if (file == null) return;
+          widget.onContentSelected.call(file);
           setState(() {
             contentImage = file;
           });
